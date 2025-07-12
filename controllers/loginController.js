@@ -32,9 +32,9 @@ export async function postSignUp(req, res) {
     })
     console.log(req.body)
 
-    res.sendStatus(201)
+    return res.sendStatus(201)
   } catch (e) {
-    res.sendStatus(500)
+    return res.sendStatus(500)
   }
 }
 
@@ -44,9 +44,9 @@ export async function postSignIn (req,res) {
     password: joi.string().min(6).required(),
   })
 
-  const { body } = req;
+  const { body } = req
   try {
-    const user = await db.collection('users').findOne({email: body.email});
+    const user = await db.collection('users').findOne({email: body.email})
 
     const validation = authSchema.validate(req.body, { abortEarly: false })
     if (validation.error) {
@@ -55,19 +55,17 @@ export async function postSignIn (req,res) {
 
     if(bcrypt.compareSync(body.password, user.password)){
       const token = uuid();
-      const session = await db.collection('sessions').findOne({'user_id': user._id});
+      const session = await db.collection('sessions').findOne({'user_id': user._id})
       if(session){
-          res.status(200).send({'user_id': session.user_id, 'token': session.token});
-          return;
+          return res.status(200).send({'token': session.token})
       }else{
-          await db.collection("sessions").insertOne({'user_id': user._id, 'token': token});
-          res.status(200).send({'user_id': user._id, 'token': token});
-          return;
+          await db.collection("sessions").insertOne({'user_id': user._id, 'token': token})
+          return res.status(200).send({'token': token})
       }
     }
-    res.sendStatus(401);
+    return res.sendStatus(401)
   } catch (e) {
-    console.log(e);     
-    res.sendStatus(422);   
+    console.log(e)    
+    return res.sendStatus(422)  
   }
 }

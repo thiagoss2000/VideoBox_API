@@ -3,6 +3,7 @@ import cors from "cors"
 import dotenv from "dotenv"
 
 import loginRouter from "./routers/loginRouter.js"
+import preferredRouter from "./routers/preferredRouter.js"
 
 dotenv.config()
 
@@ -13,6 +14,7 @@ app.use(cors())
 
 // routes
 app.use(loginRouter)
+app.use(preferredRouter)
 
 // port
 const port = process.env.PORT
