@@ -8,6 +8,6 @@ const preferredRouter = Router()
 preferredRouter.use('/preference', authMiddleware);
 
 preferredRouter.get("/preference", getPreference)
-preferredRouter.post('/preference', setPreference)
+preferredRouter.patch('/preference', setPreference)
 
 export default preferredRouter

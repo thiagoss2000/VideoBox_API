@@ -6,9 +6,9 @@ import { v4 as uuid } from 'uuid';
 export async function postSignUp(req, res) {
   // validate req.body obj
   const authSchema = joi.object({
-    name: joi.string().required(),
-    email: joi.string().email().required(),
-    password: joi.string().min(6).required(),
+    name: joi.string().trim().required(),
+    email: joi.string().email().trim().required(),
+    password: joi.string().min(8).required(),
     confirmPassword: joi.string().valid(joi.ref("password")).required()
   })
   const validation = authSchema.validate(req.body, { abortEarly: false })
@@ -22,7 +22,7 @@ export async function postSignUp(req, res) {
     // check if email already exists
     const existEmail = await db.collection("users").findOne({ email: req.body.email })
     if (existEmail) {
-      return res.sendStatus(409)
+      return res.sendStatus(409).send({ message: "email já cadastrado" })
     }
 
     // create new document in collection
@@ -40,18 +40,21 @@ export async function postSignUp(req, res) {
 
 export async function postSignIn (req,res) {
   const authSchema = joi.object({
-    email: joi.string().email().required(),
-    password: joi.string().min(6).required(),
+    email: joi.string().email().trim().required(),
+    password: joi.string().min(8).required(),
   })
 
   const { body } = req
+  
+  const validation = authSchema.validate(req.body, { abortEarly: false })
+  if (validation.error) {
+    return res.status(422).send(validation.error.details.map((e) => e.message))
+  }
+
   try {
     const user = await db.collection('users').findOne({email: body.email})
 
-    const validation = authSchema.validate(req.body, { abortEarly: false })
-    if (validation.error) {
-      return res.status(422).send(validation.error.details.map((e) => e.message))
-    }
+    if (!user) return res.sendStatus(401); // email não cadastrado
 
     if(bcrypt.compareSync(body.password, user.password)){
       const token = uuid();
@@ -66,6 +69,6 @@ export async function postSignIn (req,res) {
     return res.sendStatus(401)
   } catch (e) {
     console.log(e)    
-    return res.sendStatus(422)  
+    return res.sendStatus(500)  
   }
 }
