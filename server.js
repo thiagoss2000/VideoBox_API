@@ -4,6 +4,8 @@ import dotenv from "dotenv"
 
 import loginRouter from "./routers/loginRouter.js"
 import preferredRouter from "./routers/preferredRouter.js"
+import foldersRouter from "./routers/foldersRouter.js"
+import timelineRouter from "./routers/timelineRouter.js"
 
 dotenv.config()
 
@@ -15,6 +17,8 @@ app.use(cors())
 // routes
 app.use(loginRouter)
 app.use(preferredRouter)
+app.use(foldersRouter)
+app.use(timelineRouter)
 
 // port
 export default app

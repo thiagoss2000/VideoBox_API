@@ -109,7 +109,9 @@ Respostas:
 
     500: Erro interno do servidor
 
-PATCH /preferences/ambient
+###Atualizar preferências de busca (canais bloqueados e/ou temas de interesse)
+
+PATCH /preferences/search
 
 Cabeçalho:
 
@@ -133,6 +135,44 @@ Requisição JSON:
     add: 'channelBlock' ou 'themeVideo'
 
     remove: 'channelBlock' ou 'themeVideo'
+
+Respostas:
+
+    200: Preferências atualizadas
+
+    422: Dados inválidos
+
+    500: Erro interno do servidor
+
+###Retornar recomendações de vídeo
+
+get /timeline
+
+Cabeçalho:
+
+Authorization: Bearer <token>
+Content-Type: application/json
+
+query?newList=true (opcional)
+
+parametro newList, força geração de nova lista de recomendações
+
+Respostas:
+
+    200: Preferências atualizadas
+
+    500: Erro interno do servidor
+
+###Retornar reaultado da busca de vídeos
+
+get /timeline/search
+
+Cabeçalho:
+
+Authorization: Bearer <token>
+Content-Type: application/json
+
+query?search="título buscado"
 
 Respostas:
 
