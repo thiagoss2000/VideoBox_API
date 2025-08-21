@@ -10,7 +10,7 @@ describe("Preferências do usuário", () => {
 
   it("deve salvar preferência com tema válido", async () => {
     const res = await request(app)
-      .patch("/preference")
+      .patch("/preference/ambient")
       .set("token", `Bearer ${token}`)
       .send({ theme: "dark" })
 
@@ -19,7 +19,7 @@ describe("Preferências do usuário", () => {
 
   it("deve atualizar idioma e limite de tempo válidos", async () => {
     const res = await request(app)
-      .patch("/preference")
+      .patch("/preference/ambient")
       .set("token", `Bearer ${token}`)
       .send({ language: "pt-BR", timeLimit: 8 })
 
@@ -28,7 +28,7 @@ describe("Preferências do usuário", () => {
 
   it("deve retornar 422 para idioma inválido", async () => {
     const res = await request(app)
-      .patch("/preference")
+      .patch("/preference/ambient")
       .set("token", `Bearer ${token}`)
       .send({ language: "es" })
 
@@ -38,7 +38,7 @@ describe("Preferências do usuário", () => {
 
   it("deve retornar 422 se nenhuma preferência for enviada", async () => {
     const res = await request(app)
-      .patch("/preference")
+      .patch("/preference/ambient")
       .set("token", `Bearer ${token}`)
       .send({})
 
@@ -54,5 +54,80 @@ describe("Preferências do usuário", () => {
     expect(res.body).toHaveProperty("theme")
     expect(res.body).toHaveProperty("language")
     expect(res.body).toHaveProperty("timeLimit")
+  })
+
+  it("deve retornar 422 se nenhuma preferência for enviada", async () => {
+    const res = await request(app)
+      .patch("/preference/search")
+      .set("token", `Bearer ${token}`)
+      .send({})
+
+    expect(res.status).toBe(422)
+  })
+
+  it("deve retornar 422 se preferência estiver vazia", async () => {
+    const res = await request(app)
+      .patch("/preference/search")
+      .set("token", `Bearer ${token}`)
+      .send({add:{}})
+
+    expect(res.status).toBe(422)
+  })
+
+  it("deve adicionar channelBlock e themeVideo", async () => {
+    const res = await request(app)
+      .patch("/preference/search")
+      .set("token", `Bearer ${token}`)
+      .send({
+        "add":{
+          channelBlock:["dark"],
+          themeVideo:["music"]
+        }
+      })
+
+    expect(res.status).toBe(200)
+  })
+
+  it("deve retornar as preferências salvas corretamente", async () => {
+    const res = await request(app)
+      .get("/preference")
+      .set("token", `Bearer ${token}`) 
+
+    expect(res.status).toBe(200)
+    expect(res.body).toHaveProperty("channelBlock");
+    expect(res.body.channelBlock).toContain("dark");
+
+    expect(res.body).toHaveProperty("themeVideo");
+    expect(res.body.themeVideo).toContain("music");
+  })
+
+  it("deve adicionar channelBlock e themeVideo e remover item", async () => {
+    const res = await request(app)
+      .patch("/preference/search")
+      .set("token", `Bearer ${token}`)
+      .send({
+        "add":{
+          channelBlock:["dark"],
+          themeVideo:["music"]
+        },
+        "remove":{
+          channelBlock:["dark"]
+        }
+      })
+
+    expect(res.status).toBe(200)
+  })
+
+  it("deve retornar as preferências salvas corretamente", async () => {
+    const res = await request(app)
+      .get("/preference")
+      .set("token", `Bearer ${token}`) 
+
+    expect(res.status).toBe(200)
+    expect(res.body).toHaveProperty("channelBlock");
+    expect(res.body.channelBlock).not.toContain("dark");
+
+    expect(res.body).toHaveProperty("themeVideo");
+    expect(res.body.themeVideo).toContain("music");
   })
 })

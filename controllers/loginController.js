@@ -54,7 +54,7 @@ export async function postSignIn (req,res) {
   try {
     const user = await db.collection('users').findOne({email: body.email})
 
-    if (!user) return res.sendStatus(401); // email não cadastrado
+    if (!user) return res.sendStatus(401).send({'message': 'email não cadastrado'}); // email não cadastrado
 
     if(bcrypt.compareSync(body.password, user.password)){
       const token = uuid();

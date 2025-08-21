@@ -216,5 +216,5 @@ describe("POST /sign-in", () => {
             .send({ email: 12345, password: true })
 
         expect(response.status).toBe(422)
-        })
+    })
 })

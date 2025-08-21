@@ -63,17 +63,22 @@ Resposta:
     200: Preferências do usuário
 
 {
-  "user": "userIdAqui",
-  "theme": "light",
-  "language": "pt-BR",
-  "timeLimit": 5
+  "_id": "0x0x0x0x0x0x0x0x0x0x0x0x"
+  "user": "0x0x0x0x0x0x0x0x0x0x0x0x"
+  "channelBlock": [],
+  "themeVideo": [
+    "music"
+  ],
+  "language": "en",
+  "theme": "dark",
+  "timeLimit": 8
 }
 
     500: Erro interno do servidor
 
 ###Atualizar preferências do usuário (um ou mais campos)
 
-PATCH /preferences
+PATCH /preferences/ambient
 
 Cabeçalho:
 
@@ -95,6 +100,39 @@ Requisição JSON:
     language: "pt-BR" ou "en"
 
     timeLimit: número inteiro entre 1 e 24
+
+Respostas:
+
+    200: Preferências atualizadas
+
+    422: Dados inválidos
+
+    500: Erro interno do servidor
+
+PATCH /preferences/ambient
+
+Cabeçalho:
+
+Authorization: Bearer <token>
+Content-Type: application/json
+
+Requisição JSON:
+
+{
+  "add":{
+    "channelBlock":["dark"],
+    "themeVideo":["music"]
+  },
+  "remove":{
+    "channelBlock":["dark"]
+  }
+}
+
+    Campos opcionais, mas ao menos um deve ser enviado.
+
+    add: 'channelBlock' ou 'themeVideo'
+
+    remove: 'channelBlock' ou 'themeVideo'
 
 Respostas:
 

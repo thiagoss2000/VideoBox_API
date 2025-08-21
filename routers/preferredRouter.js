@@ -1,13 +1,14 @@
 import { Router } from "express"
 
-import { getPreference, setPreference } from "../controllers/preferenceController.js"
-import { authMiddleware } from "../middlewares/authMiddleware.js";
+import { getPreferences, setAmbientPreference, setSearchPreference } from "../controllers/preferenceController.js"
+import { authMiddleware } from "../middlewares/authMiddleware.js"
+
+const routes = Router()
+    .get("/", getPreferences)
+    .patch('/ambient', setAmbientPreference) // preferencia de ambiente
+    .patch('/search', setSearchPreference) // preferencia de busca {theme, block}
 
 const preferredRouter = Router()
-
-preferredRouter.use('/preference', authMiddleware);
-
-preferredRouter.get("/preference", getPreference)
-preferredRouter.patch('/preference', setPreference)
+preferredRouter.use('/preference', authMiddleware, routes)
 
 export default preferredRouter
