@@ -1,6 +1,6 @@
 # 📘 Documentação API – VideoBox
 
-###Criar novo usuário
+### Criar novo usuário
 
 POST /sign-up
 
@@ -25,7 +25,7 @@ Respostas:
 
     422: Dados inválidos
 
-###Login do usuário
+### Login do usuário
 
 POST /sign-in
 
@@ -50,7 +50,7 @@ Resposta:
 
     422: Dados inválidos
 
-###Obter preferências do usuário
+### Obter preferências do usuário
 
 GET /preferences
 
@@ -76,7 +76,7 @@ Resposta:
 
     500: Erro interno do servidor
 
-###Atualizar preferências do usuário (um ou mais campos)
+### Atualizar preferências do usuário (um ou mais campos)
 
 PATCH /preferences/ambient
 
@@ -109,7 +109,7 @@ Respostas:
 
     500: Erro interno do servidor
 
-###Atualizar preferências de busca (canais bloqueados e/ou temas de interesse)
+### Atualizar preferências de busca (canais bloqueados e/ou temas de interesse)
 
 PATCH /preferences/search
 
@@ -144,7 +144,7 @@ Respostas:
 
     500: Erro interno do servidor
 
-###Retornar recomendações de vídeo
+### Retornar recomendações de vídeo
 
 get /timeline
 
@@ -159,11 +159,11 @@ parametro newList, força geração de nova lista de recomendações
 
 Respostas:
 
-    200: Preferências atualizadas
+    200: nova lista
 
     500: Erro interno do servidor
 
-###Retornar reaultado da busca de vídeos
+### Retornar reaultado da busca de vídeos
 
 get /timeline/search
 
@@ -176,13 +176,184 @@ query?search="título buscado"
 
 Respostas:
 
-    200: Preferências atualizadas
+    200: ok
 
     422: Dados inválidos
 
     500: Erro interno do servidor
 
-Observações
+### Retornar pastas com conteúdo
+
+get /folders/list
+
+Cabeçalho:
+
+Authorization: Bearer <token>
+Content-Type: application/json
+
+Respostas:
+
+    200: ok
+
+    500: Erro interno do servidor
+
+### Criar nova pasta
+
+post /folders/new
+
+Cabeçalho:
+
+Authorization: Bearer <token>
+Content-Type: application/json
+
+Requisição JSON:
+{
+  folderName: "exemplo"
+}
+
+Respostas:
+
+    200: ok
+
+    422: Dados inválidos
+
+    409: pasta existente
+
+    500: Erro interno do servidor
+
+### Deletar pasta
+
+delete /folders/rem
+
+Cabeçalho:
+
+Authorization: Bearer <token>
+Content-Type: application/json
+
+Requisição JSON:
+{
+  folderName: "exemplo"
+}
+
+Respostas:
+
+    200: ok
+
+    422: Dados inválidos
+
+    404: pasta não encontrada
+
+    500: Erro interno do servidor
+
+### Editar nome da pasta
+
+patch /folders/name
+
+Cabeçalho:
+
+Authorization: Bearer <token>
+Content-Type: application/json
+
+Requisição JSON:
+{
+  folderName: "exemplo"
+}
+
+Respostas:
+
+    200: ok
+
+    422: Dados inválidos
+
+    404: pasta não encontrada
+
+    409: sem alteração
+
+    500: Erro interno do servidor
+
+### Adicionar vídeo à pasta
+
+post /folders/video
+
+Cabeçalho:
+
+Authorization: Bearer <token>
+Content-Type: application/json
+
+Requisição JSON:
+{
+  folderName: "exemplo"
+  videoId: "id_do_video"
+  videoTag: "opcional"
+}
+
+Respostas:
+
+    200: ok
+
+    422: Dados inválidos
+
+    404: pasta não encontrada
+
+    409: pasta já contem o vídeo
+
+    500: Erro interno do servidor
+
+### mudar etiqueta de vídeo
+
+patch /folders/video/tag
+
+Cabeçalho:
+
+Authorization: Bearer <token>
+Content-Type: application/json
+
+Requisição JSON:
+{
+  folderName: "exemplo"
+  videoId: "id_do_video"
+  videoTag: "novo_nome"
+}
+
+Respostas:
+
+    200: ok
+
+    422: Dados inválidos
+
+    404: pasta não encontrada
+
+    304: nenhuma alteração
+
+    500: Erro interno do servidor
+
+### remover vídeo da pasta
+
+delete /folders/video
+
+Cabeçalho:
+
+Authorization: Bearer <token>
+Content-Type: application/json
+
+Requisição JSON:
+{
+  folderName: "exemplo"
+  videoId: "id_do_video"
+}
+
+Respostas:
+
+    200: ok
+
+    422: Dados inválidos
+
+    404: pasta não encontrada / vídeo não encontrado
+
+    500: Erro interno do servidor
+
+
+## Observações
 
     Use o token retornado no login para autenticar rotas protegidas.
 

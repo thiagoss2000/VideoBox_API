@@ -47,6 +47,7 @@ export async function searchVideos(req, res) {
     
     try {             
         const videos = await searchYoutube(search)
+        await db.collection("timeline").replaceOne({ user: userId }, { user: userId, searchVideos: videos }, { upsert: true })
         return res.status(200).json(videos)
     } catch {
         return res.sendStatus(500)
