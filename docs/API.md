@@ -257,6 +257,7 @@ Content-Type: application/json
 Requisição JSON:
 {
   folderName: "exemplo"
+  newFolderName: "exemplo1"
 }
 
 Respostas:

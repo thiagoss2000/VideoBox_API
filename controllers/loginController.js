@@ -1,74 +1,52 @@
-import db from "../db.js"
+import * as authService from "../services/authServices.js"
 import joi from "joi"
-import bcrypt from "bcrypt"
-import { v4 as uuid } from 'uuid';
 
 export async function postSignUp(req, res) {
-  // validate req.body obj
-  const authSchema = joi.object({
-    name: joi.string().trim().required(),
-    email: joi.string().email().trim().required(),
-    password: joi.string().min(8).required(),
-    confirmPassword: joi.string().valid(joi.ref("password")).required()
-  })
-  const validation = authSchema.validate(req.body, { abortEarly: false })
-  if (validation.error) {
-    return res.status(422).send(validation.error.details.map((e) => e.message))
-  }
+	// validate req.body obj
+	const authSchema = joi.object({
+		name: joi.string().trim().required(),
+		email: joi.string().email().trim().required(),
+		password: joi.string().min(8).required(),
+		confirmPassword: joi.string().valid(joi.ref("password")).required()
+	})
+	const validation = authSchema.validate(req.body, { abortEarly: false })
+	if (validation.error) {
+		return res.status(422).send(validation.error.details.map((e) => e.message))
+	}
 
-  delete req.body.confirmPassword
-
-  try {
-    // check if email already exists
-    const existEmail = await db.collection("users").findOne({ email: req.body.email })
-    if (existEmail) {
-      return res.sendStatus(409).send({ message: "email já cadastrado" })
-    }
-
-    // create new document in collection
-    await db.collection("users").insertOne({
-      ...req.body,
-      password: bcrypt.hashSync(req.body.password, 10),
-    })
-    console.log(req.body)
-
-    return res.sendStatus(201)
-  } catch (e) {
-    return res.sendStatus(500)
-  }
+	try {
+		await authService.signUp(req.body)
+		return res.sendStatus(201)
+	} catch (e) {
+		if (e.code === "EMAIL_CONFLICT") {
+		return res.status(409).send({ message: "email já cadastrado" })
+		}
+		return res.sendStatus(500)
+	} 
 }
 
-export async function postSignIn (req,res) {
-  const authSchema = joi.object({
-    email: joi.string().email().trim().required(),
-    password: joi.string().min(8).required(),
-  })
+export async function postSignIn(req, res) {
+	const authSchema = joi.object({
+		email: joi.string().email().trim().required(),
+		password: joi.string().min(8).required(),
+	})
 
-  const { body } = req
-  
-  const validation = authSchema.validate(req.body, { abortEarly: false })
-  if (validation.error) {
-    return res.status(422).send(validation.error.details.map((e) => e.message))
-  }
+	const validation = authSchema.validate(req.body, { abortEarly: false })
+	if (validation.error) {
+		return res.status(422).send(validation.error.details.map((e) => e.message))
+	}
 
-  try {
-    const user = await db.collection('users').findOne({email: body.email})
-
-    if (!user) return res.sendStatus(401).send({'message': 'email não cadastrado'}); // email não cadastrado
-
-    if(bcrypt.compareSync(body.password, user.password)){
-      const token = uuid();
-      const session = await db.collection('sessions').findOne({'user_id': user._id})
-      if(session){
-          return res.status(200).send({'token': session.token})
-      }else{
-          await db.collection("sessions").insertOne({'user_id': user._id, 'token': token})
-          return res.status(200).send({'token': token})
-      }
-    }
-    return res.sendStatus(401)
-  } catch (e) {
-    console.log(e)    
-    return res.sendStatus(500)  
-  }
+	try {  // usuario aceito, retorna nome e token de acesso
+		const { token, userName } = await authService.signIn(req.body)
+		return res.status(200).send({ token, user_name: userName })
+	} catch (e) {
+		if (e.code === "INVALID_EMAIL") {
+		return res.status(401).send({ message: "email não cadastrado" })
+		}
+		if (e.code === "INVALID_CREDENTIALS") {
+		return res.status(401).send({ message: "credenciais inválidas" })
+		}
+		console.log(e)
+		return res.sendStatus(500)
+	}
 }

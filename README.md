@@ -11,10 +11,10 @@
 
 ## Instalação e execução
 
-git clone https://github.com/thiagoss2000/VideoBox.git
+git clone https://github.com/thiagoss2000/VideoBox_API.git
 
 npm install
-npm run dev
+npm start
 
 ## Variáveis de ambiente (`.env`)
 
