@@ -1,6 +1,7 @@
-import db from "../db.js"
+import { getDB } from "../config/db.js"
 
 export async function replaceTimeline(userId, data) {
+    const db = getDB()
     return db.collection("timeline").replaceOne(
         { user: userId },
         { user: userId, ...data },
@@ -9,5 +10,6 @@ export async function replaceTimeline(userId, data) {
 }
 
 export async function findByUser(userId) {
+    const db = getDB()
     return db.collection("timeline").findOne({ user: userId })
 }

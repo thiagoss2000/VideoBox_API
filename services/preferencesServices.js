@@ -1,4 +1,3 @@
-import db from "../db.js"
 import * as preferenceRepository from "../repositories/preferenceRepository.js"
 
 export async function setAmbientPreference(userId, preferenceData) {
@@ -13,12 +12,7 @@ export async function setBasicPreference(userId) {
         channelBlock: [],
         themeVideo: []
     }
-    try {          
-        await db.collection("preferences").updateOne({user: userId}, {$set: basicPreference}, { upsert: true })
-        return 0
-    } catch {
-        return 1
-    }
+    return preferenceRepository.updateByUser(userId, basicPreference)
 }
 
 export async function setSearchPreference(userId, body) {

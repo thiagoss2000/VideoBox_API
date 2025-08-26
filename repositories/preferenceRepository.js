@@ -1,6 +1,7 @@
-import db from "../db.js"
+import { getDB } from "../config/db.js"
 
 export async function updateByUser(userId, data) {
+    const db = getDB()
     return db.collection("preferences").updateOne(
         { user: userId },
         { $set: data },
@@ -9,6 +10,7 @@ export async function updateByUser(userId, data) {
 }
 
 export async function addToSet(userId, addData) {
+    const db = getDB()
     return db.collection("preferences").updateOne(
         { user: userId },
         { $addToSet: addData },
@@ -17,6 +19,7 @@ export async function addToSet(userId, addData) {
 }
 
 export async function pull(userId, pullData) {
+    const db = getDB()
     return db.collection("preferences").updateOne(
         { user: userId },
         { $pull: pullData }
@@ -24,5 +27,6 @@ export async function pull(userId, pullData) {
 }
 
 export async function findByUser(userId) {
+    const db = getDB()
     return db.collection("preferences").findOne({ user: userId })
 }

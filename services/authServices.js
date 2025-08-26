@@ -1,4 +1,5 @@
 import bcrypt from "bcrypt"
+import { v4 as uuid } from "uuid"
 import * as userRepository from "../repositories/userRepository.js"
 import * as sessionRepository from "../repositories/sessionsRepository.js"
 import { setBasicPreference } from "../services/preferencesServices.js";
@@ -44,4 +45,10 @@ export async function signIn({ email, password }) {
 	const token = uuid()
 	await sessionRepository.create({ userId: user._id, token })
 	return { token, userName: user.name }
+}
+
+export async function validateSession(token) {
+	const session = await sessionRepository.findSessionByToken(token)
+	if (!session) throw { code: "UNAUTHORIZED" }
+	return session
 }

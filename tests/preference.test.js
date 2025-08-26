@@ -1,11 +1,12 @@
 import request from "supertest"
 import app from "../server.js"
+import { getAuthToken } from "./setup.js" // pega token do setup
 
 describe("Preferências do usuário", () => {
   let token
 
   beforeAll(() => {
-    token = global.__TEST_TOKEN__
+    token = getAuthToken() // define token antes dos testes
   })
 
   it("deve salvar preferência com tema válido", async () => {
@@ -48,7 +49,7 @@ describe("Preferências do usuário", () => {
   it("deve retornar as preferências salvas corretamente", async () => {
     const res = await request(app)
       .get("/preference")
-      .set("token", `Bearer ${token}`) 
+      .set("token", `Bearer ${token}`)
 
     expect(res.status).toBe(200)
     expect(res.body).toHaveProperty("theme")
@@ -56,7 +57,7 @@ describe("Preferências do usuário", () => {
     expect(res.body).toHaveProperty("timeLimit")
   })
 
-  it("deve retornar 422 se nenhuma preferência for enviada", async () => {
+  it("deve retornar 422 se nenhuma preferência for enviada no search", async () => {
     const res = await request(app)
       .patch("/preference/search")
       .set("token", `Bearer ${token}`)
@@ -69,7 +70,7 @@ describe("Preferências do usuário", () => {
     const res = await request(app)
       .patch("/preference/search")
       .set("token", `Bearer ${token}`)
-      .send({add:{}})
+      .send({ add: {} })
 
     expect(res.status).toBe(422)
   })
@@ -79,10 +80,10 @@ describe("Preferências do usuário", () => {
       .patch("/preference/search")
       .set("token", `Bearer ${token}`)
       .send({
-        "add":{
-          channelBlock:["dark"],
-          themeVideo:["music"]
-        }
+        add: {
+          channelBlock: ["dark"],
+          themeVideo: ["music"],
+        },
       })
 
     expect(res.status).toBe(200)
@@ -91,14 +92,11 @@ describe("Preferências do usuário", () => {
   it("deve retornar as preferências salvas corretamente", async () => {
     const res = await request(app)
       .get("/preference")
-      .set("token", `Bearer ${token}`) 
+      .set("token", `Bearer ${token}`)
 
     expect(res.status).toBe(200)
-    expect(res.body).toHaveProperty("channelBlock");
-    expect(res.body.channelBlock).toContain("dark");
-
-    expect(res.body).toHaveProperty("themeVideo");
-    expect(res.body.themeVideo).toContain("music");
+    expect(res.body.channelBlock).toContain("dark")
+    expect(res.body.themeVideo).toContain("music")
   })
 
   it("deve adicionar channelBlock e themeVideo e remover item", async () => {
@@ -106,28 +104,25 @@ describe("Preferências do usuário", () => {
       .patch("/preference/search")
       .set("token", `Bearer ${token}`)
       .send({
-        "add":{
-          channelBlock:["dark"],
-          themeVideo:["music"]
+        add: {
+          channelBlock: ["dark"],
+          themeVideo: ["music"],
         },
-        "remove":{
-          channelBlock:["dark"]
-        }
+        remove: {
+          channelBlock: ["dark"],
+        },
       })
 
     expect(res.status).toBe(200)
   })
 
-  it("deve retornar as preferências salvas corretamente", async () => {
+  it("deve retornar as preferências salvas corretamente após remoção", async () => {
     const res = await request(app)
       .get("/preference")
-      .set("token", `Bearer ${token}`) 
+      .set("token", `Bearer ${token}`)
 
     expect(res.status).toBe(200)
-    expect(res.body).toHaveProperty("channelBlock");
-    expect(res.body.channelBlock).not.toContain("dark");
-
-    expect(res.body).toHaveProperty("themeVideo");
-    expect(res.body.themeVideo).toContain("music");
+    expect(res.body.channelBlock).not.toContain("dark")
+    expect(res.body.themeVideo).toContain("music")
   })
 })
