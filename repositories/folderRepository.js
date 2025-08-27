@@ -68,6 +68,14 @@ export async function removeVideo(userId, folderName, videoId) {
     )
 }
 
+export async function updateFolderVideos(userId, folderName, videos) {
+    const db = getDB()
+    return db.collection("folders").updateOne(
+        { user: userId, "folders.name": folderName },
+        { $set: { "folders.$.videos": videos } }
+    )
+}
+
 export async function updateNotes(userId, folderName, text) {
     const db = getDB()
     return db.collection("folders").updateOne(

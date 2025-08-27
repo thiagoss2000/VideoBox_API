@@ -34,6 +34,11 @@ export async function addVideo(userId, folderName, videoId, videoTag) {
 
     fromRec.videoTag = videoTag || ""
 
+    const saveVideos = await folderRepository.findFolderByName(userId, folderName)
+    const folderItens = saveVideos.folders.find(folder => folder.name == folderName)
+
+    fromRec._id = (folderItens.videos.length + 1)
+
     const result = await folderRepository.addVideo(userId, folderName, fromRec)
     if (result.matchedCount === 0) throw { code: "NOT_FOUND_FOLDER" }
     if (result.modifiedCount === 0) throw { code: "ALREADY_EXISTS" }
@@ -49,6 +54,13 @@ export async function deleteVideo(userId, folderName, videoId) {
     const result = await folderRepository.removeVideo(userId, folderName, videoId)
     if (result.matchedCount === 0) throw { code: "NOT_FOUND_FOLDER" }
     if (result.modifiedCount === 0) throw { code: "NOT_FOUND_VIDEO" }
+    const saveVideos = await folderRepository.findFolderByName(userId, folderName)
+    const folderItens = saveVideos.folders.find(folder => folder.name == folderName)
+    if (!folderItens) throw { code: "NOT_FOUND_FOLDER" }
+    folderItens.videos.forEach((v, idx) => {    
+        v._id = idx + 1
+    })  // Salva a pasta atualizada com os novos _ids
+    await folderRepository.updateFolderVideos(userId, folderName, folderItens.videos)
 }
 
 export async function editFolderNotes(userId, folderName, text) {

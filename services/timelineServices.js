@@ -40,7 +40,7 @@ export async function getTimeline(userId, newList = false) {
 
     if (!recommendations || newList) {
         const newRecommendations = await getRecommendations(userId)
-        await timelineRepository.replaceTimeline(userId, { recommendations: newRecommendations })
+        await timelineRepository.replaceTimeline(userId, { searchVideos: newRecommendations })
         recommendations = await timelineRepository.findByUser(userId)
     }
 
