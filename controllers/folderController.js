@@ -47,6 +47,31 @@ export async function editFolderName(req, res) {
     }
 }
 
+// edita dias de rotina
+export async function editFolderDays(req, res) {
+  const { body, userId } = req
+
+  const schema = joi.object({
+    folderName: joi.string().required().min(1),
+    daysOfWeek: joi.array().items(joi.string().valid(
+      "domingo", "segunda-feira", "terça-feira", "quarta-feira", "quinta-feira", "sexta-feira", "sábado"
+    )).required()
+  })
+
+  const validation = schema.validate(body, { abortEarly: false })
+  if (validation.error)
+    return res.status(422).send("Dias inválidos")
+
+  try {
+    await folderService.editFolderDays(userId, body.folderName, body.daysOfWeek)
+    return res.sendStatus(200)
+  } catch (e) {
+    if (e.code === "NOT_FOUND") return res.status(404).send("Pasta não encontrada")
+    console.error(e)
+    return res.sendStatus(500)
+  }
+}
+
 // deleta pasta
 export async function deleteFolder(req, res) {
     const { body, userId } = req

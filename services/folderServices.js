@@ -15,6 +15,13 @@ export async function editFolderName(userId, oldName, newName) {
     if (result.matchedCount === 0) throw { code: "NOT_FOUND" }
 }
 
+export async function editFolderDays(userId, folderName, days) {
+    const exists = await folderRepository.findFolderByName(userId, folderName)
+    if (!exists) throw { code: "NOT_FOUND" }
+    const result = await folderRepository.updateFolderDays(userId, folderName, days)
+    if (result.matchedCount === 0) throw { code: "NOT_FOUND" }
+}
+
 export async function deleteFolder(userId, folderName) {
     const result = await folderRepository.removeFolder(userId, folderName)
     if (result.modifiedCount === 0) throw { code: "NOT_FOUND" }
@@ -37,11 +44,13 @@ export async function addVideo(userId, folderName, videoId, videoTag) {
     const saveVideos = await folderRepository.findFolderByName(userId, folderName)
     const folderItens = saveVideos.folders.find(folder => folder.name == folderName)
 
+    const videoExist = await folderItens.videos.find(video => video.videoId == videoId)
+    if (videoExist) throw { code: "ALREADY_EXISTS" }
+
     fromRec._id = (folderItens.videos.length + 1)
 
     const result = await folderRepository.addVideo(userId, folderName, fromRec)
     if (result.matchedCount === 0) throw { code: "NOT_FOUND_FOLDER" }
-    if (result.modifiedCount === 0) throw { code: "ALREADY_EXISTS" }
 }
 
 export async function editTagVideo(userId, folderName, videoId, videoTag) {

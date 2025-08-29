@@ -17,6 +17,15 @@ export async function updateFolderName(userId, folderName, newFolderName) {
     )
 }
 
+export async function updateFolderDays(userId, folderName, days) {
+    const db = getDB()
+    return db.collection("folders").updateOne(
+        { user: userId, "folders.name": folderName },
+        { $set: { "folders.$.daysOfWeek": days } },
+        { upsert: true }
+    )
+}
+
 export async function removeFolder(userId, folderName) {
     const db = getDB()
     return db.collection("folders").updateOne(
