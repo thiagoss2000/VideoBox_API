@@ -1,6 +1,8 @@
 import { Router } from "express"
 
-import { addVideo, createFolder, deleteFolder, deleteVideo, editFolderDays, editFolderName, editFolderNotes, editTagVideo, getFolders } from "../controllers/folderController.js"
+import { addFolderNote, addVideo, createFolder, deleteFolder, 
+    deleteFolderNote, deleteVideo, editFolderDays, editFolderName, 
+    editFolderNote, editFolderNotes, editTagVideo, getFolders } from "../controllers/folderController.js"
 import { authMiddleware } from "../middlewares/authMiddleware.js"
 
 const routes = Router() 
@@ -13,6 +15,9 @@ const routes = Router()
     .post("/video", addVideo) 
     .delete('/video', deleteVideo) 
     .patch("/days", editFolderDays)
+    .patch("/notes/new", addFolderNote)
+    .patch("/notes/edit", editFolderNote)
+    .patch("/notes/delete", deleteFolderNote)
 
 const foldersRouter = Router()
 foldersRouter.use('/folders', authMiddleware, routes)

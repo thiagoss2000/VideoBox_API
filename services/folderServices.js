@@ -77,3 +77,18 @@ export async function editFolderNotes(userId, folderName, text) {
     if (result.matchedCount === 0) throw { code: "NOT_FOUND" }
     if (result.modifiedCount === 0) throw { code: "NO_CHANGE" }
 }
+
+export async function addFolderNote(userId, folderName, note) {
+  const result = await folderRepository.pushFolderNote(userId, folderName, note);
+  if (result.matchedCount === 0) throw { code: "NOT_FOUND" };
+}
+
+export async function editFolderNote(userId, folderName, noteId, newText) {
+  const result = await folderRepository.editFolderNote(userId, folderName, noteId, newText);
+  if (result.matchedCount === 0) throw { code: "NOT_FOUND" };
+}
+
+export async function deleteFolderNote(userId, folderName, noteId) {
+  const result = await folderRepository.deleteFolderNote(userId, folderName, noteId);
+  if (result.matchedCount === 0) throw { code: "NOT_FOUND" };
+}

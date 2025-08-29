@@ -200,3 +200,69 @@ export async function editFolderNotes(req, res) {
         return res.sendStatus(500)
     }
 }
+
+export async function addFolderNote(req, res) {
+  const { body, userId } = req;
+
+  const schema = joi.object({
+    folderName: joi.string().required().min(1),
+    note: joi.string().required().min(1) // apenas uma string por vez
+  });
+
+  const validation = schema.validate(body, { abortEarly: false });
+  if (validation.error)
+    return res.status(422).send("Nota inválida");
+
+  try {
+    await folderService.addFolderNote(userId, body.folderName, body.note);
+    return res.sendStatus(200);
+  } catch (e) {
+    if (e.code === "NOT_FOUND") return res.status(404).send("Pasta não encontrada");
+    console.error(e);
+    return res.sendStatus(500);
+  }
+}
+
+export async function editFolderNote(req, res) {
+  const { body, userId } = req;
+
+  const schema = joi.object({
+    folderName: joi.string().required().min(1),
+    noteId: joi.string().required(), // id da nota a ser editada
+    note: joi.string().required().min(1) // novo texto da nota
+  });
+
+  const validation = schema.validate(body, { abortEarly: false });
+  if (validation.error) return res.status(422).send("Dados inválidos");
+
+  try {
+    await folderService.editFolderNote(userId, body.folderName, body.noteId, body.note);
+    return res.sendStatus(200);
+  } catch (e) {
+    if (e.code === "NOT_FOUND") return res.status(404).send("Pasta ou nota não encontrada");
+    console.error(e);
+    return res.sendStatus(500);
+  }
+}
+
+export async function deleteFolderNote(req, res) {
+  const { body, userId } = req;
+
+  const schema = joi.object({
+    folderName: joi.string().required().min(1),
+    noteId: joi.string().required() // id da nota a ser removida
+  });
+
+  const validation = schema.validate(body, { abortEarly: false });
+  if (validation.error) return res.status(422).send("Dados inválidos");
+
+  try {
+    await folderService.deleteFolderNote(userId, body.folderName, body.noteId);
+    return res.sendStatus(200);
+  } catch (e) {
+    if (e.code === "NOT_FOUND") return res.status(404).send("Pasta ou nota não encontrada");
+    console.error(e);
+    return res.sendStatus(500);
+  }
+}
+

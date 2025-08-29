@@ -1,3 +1,4 @@
+import { ObjectId } from "mongodb"
 import { getDB } from "../config/db.js"
 
 export async function insertFolder(userId, newFolder) {
@@ -91,4 +92,47 @@ export async function updateNotes(userId, folderName, text) {
         { user: userId, "folders.name": folderName },
         { $set: { "folders.$.notes": text } }
     )
+}
+
+
+export async function pushFolderNote(userId, folderName, noteText) {
+    const db = getDB()
+    const note = {
+        id: new ObjectId(),       // id único da nota
+        text: noteText,           // conteúdo
+        createdAt: new Date()     // data de criação
+    };
+
+    return db.collection("folders").updateOne(
+        { user: userId, "folders.name": folderName },
+        { $push: { "folders.$.notes": note } }, // adiciona sem sobrescrever
+        { upsert: false } // não cria documento novo automaticamente aqui
+    );
+}
+
+export async function editFolderNote(userId, folderName, noteId, newText) {
+  const db = getDB();
+
+  return db.collection("folders").updateOne(
+    { user: userId, "folders.name": folderName, "folders.notes.id": ObjectId.createFromHexString(noteId) },
+    { $set: { 
+        "folders.$[f].notes.$[n].text": newText,
+        "folders.$[f].notes.$[n].updatedAt": new Date() // adiciona timestamp da edição
+        }},
+    {
+      arrayFilters: [
+        { "f.name": folderName },
+        { "n.id": ObjectId.createFromHexString(noteId) }
+      ]
+    }
+  );
+}
+
+export async function deleteFolderNote(userId, folderName, noteId) {
+  const db = getDB();
+
+  return db.collection("folders").updateOne(
+    { user: userId, "folders.name": folderName },
+    { $pull: { "folders.$.notes": { id: ObjectId.createFromHexString(noteId) } } }
+  );
 }
