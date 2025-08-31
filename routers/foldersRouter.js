@@ -2,7 +2,7 @@ import { Router } from "express"
 
 import { addFolderNote, addVideo, createFolder, deleteFolder, 
     deleteFolderNote, deleteVideo, editFolderDays, editFolderName, 
-    editFolderNote, editFolderNotes, editTagVideo, getFolders } from "../controllers/folderController.js"
+    editFolderNote, editTagVideo, getFolders } from "../controllers/folderController.js"
 import { authMiddleware } from "../middlewares/authMiddleware.js"
 
 const routes = Router() 
@@ -10,7 +10,6 @@ const routes = Router()
     .post("/new", createFolder)  // cria nova pasta
     .delete("/rem", deleteFolder)  // deleta pasta
     .patch('/name', editFolderName) // editar nome de pasta
-    .patch('/note', editFolderNotes) // editar texto da pasta ##
     .patch('/video/tag', editTagVideo) 
     .post("/video", addVideo) 
     .delete('/video', deleteVideo) 

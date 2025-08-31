@@ -72,12 +72,6 @@ export async function deleteVideo(userId, folderName, videoId) {
     await folderRepository.updateFolderVideos(userId, folderName, folderItens.videos)
 }
 
-export async function editFolderNotes(userId, folderName, text) {
-    const result = await folderRepository.updateNotes(userId, folderName, text)
-    if (result.matchedCount === 0) throw { code: "NOT_FOUND" }
-    if (result.modifiedCount === 0) throw { code: "NO_CHANGE" }
-}
-
 export async function addFolderNote(userId, folderName, note) {
   const result = await folderRepository.pushFolderNote(userId, folderName, note);
   if (result.matchedCount === 0) throw { code: "NOT_FOUND" };

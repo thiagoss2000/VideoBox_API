@@ -86,15 +86,6 @@ export async function updateFolderVideos(userId, folderName, videos) {
     )
 }
 
-export async function updateNotes(userId, folderName, text) {
-    const db = getDB()
-    return db.collection("folders").updateOne(
-        { user: userId, "folders.name": folderName },
-        { $set: { "folders.$.notes": text } }
-    )
-}
-
-
 export async function pushFolderNote(userId, folderName, noteText) {
     const db = getDB()
     const note = {

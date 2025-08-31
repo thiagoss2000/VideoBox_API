@@ -178,29 +178,6 @@ export async function deleteVideo(req, res) {
     }
 }
 
-// notas da pasta
-export async function editFolderNotes(req, res) {
-    const { body, userId } = req
-
-    const schema = joi.object({
-        folderName: joi.string().required().min(1),
-        text: joi.string().required()
-    })
-    const validation = schema.validate(body, { abortEarly: false })
-    if (validation.error)
-        return res.status(422).send(validation.error.details.map(e => e.message))
-
-    try {
-        await folderService.editFolderNotes(userId, body.folderName, body.text)
-        return res.sendStatus(200)
-    } catch (e) {
-        if (e.code === "NOT_FOUND") return res.status(404).send("Pasta não encontrada")
-        if (e.code === "NO_CHANGE") return res.status(304).send("não há alteração de texto")
-        console.error(e)
-        return res.sendStatus(500)
-    }
-}
-
 export async function addFolderNote(req, res) {
   const { body, userId } = req;
 
