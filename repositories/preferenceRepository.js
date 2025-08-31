@@ -30,3 +30,8 @@ export async function findByUser(userId) {
     const db = getDB()
     return db.collection("preferences").findOne({ user: userId })
 }
+
+export async function deleteByUserId(userId) {
+    const db = getDB();
+    return db.collection("preferences").deleteMany({ user: userId });
+}

@@ -120,10 +120,15 @@ export async function editFolderNote(userId, folderName, noteId, newText) {
 }
 
 export async function deleteFolderNote(userId, folderName, noteId) {
-  const db = getDB();
+    const db = getDB();
 
-  return db.collection("folders").updateOne(
-    { user: userId, "folders.name": folderName },
-    { $pull: { "folders.$.notes": { id: ObjectId.createFromHexString(noteId) } } }
-  );
+    return db.collection("folders").updateOne(
+        { user: userId, "folders.name": folderName },
+        { $pull: { "folders.$.notes": { id: ObjectId.createFromHexString(noteId) } } }
+    );
+}
+
+export async function deleteByUserId(userId) {
+    const db = getDB();
+    return db.collection("folders").deleteMany({ user: userId });
 }

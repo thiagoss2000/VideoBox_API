@@ -13,3 +13,8 @@ export async function findByUser(userId) {
     const db = getDB()
     return db.collection("timeline").findOne({ user: userId })
 }
+
+export async function deleteByUserId(userId) {
+    const db = getDB();
+    return db.collection("timeline").deleteMany({ user: userId });
+}

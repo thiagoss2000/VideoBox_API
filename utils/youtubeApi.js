@@ -5,7 +5,7 @@ const youtube = google.youtube({
     auth: process.env.YT_API_KEY
 })
 
-export async function searchYoutube(query, duration = "long", maxResults = 25) {
+export async function searchYoutube(query, duration = "medium", maxResults = 25) {
     try {
         const res = await youtube.search.list({
         part: "snippet",

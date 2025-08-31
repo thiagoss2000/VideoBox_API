@@ -50,3 +50,22 @@ export async function postSignIn(req, res) {
 		return res.sendStatus(500)
 	}
 }
+
+export async function deleteAccount(req, res) {
+	try {
+		const { userId } = req
+		if (!userId) {
+			return res.status(401).send({ message: "usuário não autenticado" })
+		}
+	
+		await authService.deleteAccount(userId)
+	
+		return res.sendStatus(204) // sucesso, sem conteúdo
+	} catch (e) {
+		if (e.code === "USER_NOT_FOUND") {
+			return res.status(404).send({ message: "usuário não encontrado" })
+		}
+		console.error("Erro ao deletar conta:", e)
+		return res.sendStatus(500)
+	}
+}

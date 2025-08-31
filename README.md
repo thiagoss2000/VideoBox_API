@@ -13,6 +13,7 @@
 
 git clone https://github.com/thiagoss2000/VideoBox_API.git
 
+### node v20.19.4 (npm v10.8.2)
 npm install
 npm start
 
@@ -22,3 +23,5 @@ MONGO_URL=
 MONGO_URI=
 MONGO_DB=
 PORT=
+
+YT_API_KEY=

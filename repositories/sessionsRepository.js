@@ -14,3 +14,8 @@ export async function findSessionByToken(token) {
     const db = getDB()
     return db.collection("sessions").findOne({ token })
 }
+
+export async function deleteByUserId(userId) {
+    const db = getDB();
+    return db.collection("sessions").deleteMany({ user_id: userId });
+}
